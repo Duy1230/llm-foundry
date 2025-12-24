@@ -1,0 +1,62 @@
+# Continued Pre-training Configuration for LLaMA-3
+# This config is optimized for continued pre-training on raw text data
+
+model:
+  name_or_path: "meta-llama/Meta-Llama-3-8B"
+  trust_remote_code: false
+  use_flash_attention_2: true
+  load_in_4bit: true
+  load_in_8bit: false
+  torch_dtype: "bfloat16"
+
+tokenizer:
+  name_or_path: null  # Uses model's tokenizer
+  trust_remote_code: false
+  padding_side: "right"
+  truncation_side: "right"
+
+data:
+  dataset_name: "wikitext"  # Example dataset
+  dataset_config_name: "wikitext-2-raw-v1"
+  text_column: "text"
+  streaming: true
+  shuffle_buffer_size: 10000
+  max_seq_length: 2048
+  dataset_text_field: "text"
+  chat_template: null  # No chat template for CPT
+
+# LoRA is optional for CPT, but can be used to reduce memory
+lora:
+  r: 16
+  lora_alpha: 32
+  target_modules: null  # Auto-detect
+  lora_dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  use_gradient_checkpointing: true
+
+training:
+  output_dir: "./outputs/llama3_cpt"
+  num_train_epochs: 1.0
+  max_steps: null
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 1e-4  # Lower LR for CPT
+  lr_scheduler_type: "cosine"
+  warmup_steps: 500
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  logging_steps: 10
+  save_steps: 500
+  eval_steps: null
+  save_total_limit: 3
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  dataloader_num_workers: 4
+  remove_unused_columns: false
+  report_to: "wandb"
+  run_name: "llama3_cpt"
+  seed: 42
+  packing: true  # Enable sequence packing for efficiency
+  neftune_noise_alpha: null

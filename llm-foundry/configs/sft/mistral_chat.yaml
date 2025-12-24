@@ -1,0 +1,63 @@
+# Supervised Fine-tuning Configuration for Mistral Chat
+# This config is optimized for instruction tuning with chat templates
+
+model:
+  name_or_path: "mistralai/Mistral-7B-Instruct-v0.2"
+  trust_remote_code: false
+  use_flash_attention_2: true
+  load_in_4bit: true
+  load_in_8bit: false
+  torch_dtype: "bfloat16"
+
+tokenizer:
+  name_or_path: null  # Uses model's tokenizer
+  trust_remote_code: false
+  padding_side: "right"
+  truncation_side: "right"
+
+data:
+  dataset_name: "Open-Orca/OpenOrca"  # Example instruction dataset
+  dataset_config_name: null
+  instruction_column: "system_prompt"  # Adjust based on dataset
+  input_column: "question"
+  output_column: "response"
+  streaming: true
+  shuffle_buffer_size: 10000
+  max_seq_length: 2048
+  chat_template: "mistral"  # Use Mistral's chat template
+
+# LoRA is recommended for SFT to reduce memory and training time
+lora:
+  r: 32
+  lora_alpha: 64
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"]
+  lora_dropout: 0.05
+  bias: "none"
+  task_type: "CAUSAL_LM"
+  use_gradient_checkpointing: true
+
+training:
+  output_dir: "./outputs/mistral_chat"
+  num_train_epochs: 3.0
+  max_steps: null
+  per_device_train_batch_size: 2
+  gradient_accumulation_steps: 8
+  learning_rate: 2e-4  # Higher LR for SFT
+  lr_scheduler_type: "cosine"
+  warmup_steps: 100
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  logging_steps: 10
+  save_steps: 500
+  eval_steps: 500
+  save_total_limit: 3
+  bf16: true
+  fp16: false
+  gradient_checkpointing: true
+  dataloader_num_workers: 4
+  remove_unused_columns: false
+  report_to: "wandb"
+  run_name: "mistral_chat_sft"
+  seed: 42
+  packing: true  # Enable sequence packing for efficiency
+  neftune_noise_alpha: 5.0  # Enable NEFTune for better fine-tuning
