@@ -1,0 +1,29 @@
+# Core dependencies
+torch>=2.0.0
+transformers>=4.40.0
+datasets>=2.14.0
+accelerate>=0.30.0
+peft>=0.10.0
+trl>=0.8.0
+
+# Optimization libraries
+# Unsloth for 2x faster training and memory efficiency
+unsloth[colab-new] @ git+https://github.com/unslothai/unsloth.git
+bitsandbytes>=0.41.0
+
+# Optional: xformers for memory-efficient attention (if compatible)
+# xformers>=0.0.23
+
+# Configuration management
+pyyaml>=6.0
+pydantic>=2.0.0
+
+# Logging and monitoring
+wandb>=0.16.0
+
+# Evaluation
+lm-eval>=0.4.0
+
+# Utilities
+numpy>=1.24.0
+tqdm>=4.65.0
